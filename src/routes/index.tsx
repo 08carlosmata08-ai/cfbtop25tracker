@@ -326,7 +326,9 @@ function TeamLine({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <button
+      <Link
+        to="/team/$teamId"
+        params={{ teamId: team.id }}
         className="flex items-center gap-3 text-left"
         onClick={() => onSelect({ name: team.name, color: team.color })}
       >
