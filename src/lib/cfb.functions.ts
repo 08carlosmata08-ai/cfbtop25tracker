@@ -164,8 +164,7 @@ async function fetchPlays(eventId: string): Promise<Play[]> {
       teamId: p.start?.team?.id ? String(p.start.team.id) : null,
     }))
     .filter((p) => p.text)
-    .reverse()
-    .slice(0, 40);
+    .reverse();
 }
 
 export const getPlayByPlay = createServerFn({ method: "GET" })

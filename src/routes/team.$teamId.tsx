@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 
 import { getTeamDetail, type TeamColors } from "@/lib/cfb.functions";
 
@@ -42,6 +43,18 @@ function TeamPage() {
   });
 
   const d = q.data;
+  const [quarter, setQuarter] = useState<number | null>(null);
+
+  const periods = useMemo(() => {
+    const set = new Set<number>();
+    (q.data?.plays ?? []).forEach((p) => p.period > 0 && set.add(p.period));
+    return [...set].sort((x, y) => x - y);
+  }, [q.data]);
+
+  const activeQuarter = quarter ?? periods[periods.length - 1] ?? null;
+  const quarterPlays = (q.data?.plays ?? []).filter((p) => p.period === activeQuarter);
+  const endOfQuarter = quarterPlays[0] ?? null;
+  const periodLabel = (n: number) => (n <= 4 ? `Quarter ${n}` : `OT ${n - 4}`);
   const me = d?.team;
   const opp = d?.opponent;
   const a = me?.primary ?? "#1f2937";
@@ -114,14 +127,42 @@ function TeamPage() {
             </div>
 
             <div className="mt-6 rounded-xl bg-black/35 p-5 outline-1 -outline-offset-1 outline-white/15 backdrop-blur-md">
-              <h2 className="font-display text-lg font-semibold tracking-wide">Play-by-Play</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-display text-lg font-semibold tracking-wide">Play-by-Play</h2>
+                {periods.length > 0 && (
+                  <label className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-white/70">
+                    Period
+                    <select
+                      value={activeQuarter ?? ""}
+                      onChange={(e) => setQuarter(Number(e.target.value))}
+                      className="rounded-md bg-black/50 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-ink outline-1 -outline-offset-1 outline-white/25"
+                    >
+                      {periods.map((n) => (
+                        <option key={n} value={n} className="bg-[#10151d]">
+                          {periodLabel(n)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </div>
+              {endOfQuarter && (
+                <div className="mt-3 flex items-center gap-3 rounded-md bg-black/40 px-3 py-2 font-mono text-xs uppercase tracking-[0.18em] text-white/80">
+                  <span className="text-gold">End of {periodLabel(activeQuarter!)}</span>
+                  <span>
+                    {d.homeId === me?.id
+                      ? `${opp?.abbr ?? "AWAY"} ${endOfQuarter.awayScore} · ${me?.abbr} ${endOfQuarter.homeScore}`
+                      : `${me?.abbr} ${endOfQuarter.awayScore} · ${opp?.abbr ?? "HOME"} ${endOfQuarter.homeScore}`}
+                  </span>
+                </div>
+              )}
               <div className="mt-3 max-h-[520px] overflow-y-auto">
-                {d.plays.length === 0 && (
+                {quarterPlays.length === 0 && (
                   <p className="py-2.5 font-mono text-xs text-white/70">
                     {d.state === "pre" ? "Kickoff hasn't happened yet." : "No plays logged yet."}
                   </p>
                 )}
-                {d.plays.map((p) => {
+                {quarterPlays.map((p) => {
                   const owner: TeamColors | null =
                     p.teamId === me?.id ? me! : p.teamId === opp?.id ? opp : null;
                   return (
