@@ -4,6 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-ink: #eaf1f7;
+  --color-mute: #9db1c6;
+  --color-frost: #12233a;
+  --color-line: #223a57;
+  --color-gold: #e4b25a;
+  --color-sky: #7fc2e6;
+  --color-moss: #4fd1a0;
+  --color-clay: #e46a6a;
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-body: "Barlow", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
 /*
  * Design system definition.
  *
