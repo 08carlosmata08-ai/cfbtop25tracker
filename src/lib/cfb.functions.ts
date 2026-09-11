@@ -177,3 +177,176 @@ export const getPlayByPlay = createServerFn({ method: "GET" })
       return { plays: [] as Play[], error: (e as Error).message };
     }
   });
+
+export type TeamColors = {
+  id: string;
+  name: string;
+  fullName: string;
+  abbr: string;
+  logo: string | null;
+  primary: string;
+  secondary: string;
+  record: string;
+  rank: number | null;
+  score: number | null;
+};
+
+export type TeamDetail = {
+  team: TeamColors;
+  opponent: TeamColors | null;
+  eventId: string | null;
+  eventName: string;
+  date: string;
+  state: "pre" | "in" | "post";
+  detail: string;
+  homeId: string | null;
+  broadcast: string | null;
+  venue: string | null;
+  plays: Play[];
+  error: string | null;
+};
+
+function hex(v: any, fallback: string) {
+  const s = typeof v === "string" && v.trim() ? v.replace("#", "") : fallback;
+  return `#${s}`;
+}
+
+async function teamColors(id: string) {
+  try {
+    const d = await getJson(`${BASE}/teams/${encodeURIComponent(id)}`);
+    const t = d?.team;
+    return {
+      primary: hex(t?.color, "1f6feb"),
+      secondary: hex(t?.alternateColor, "ffffff"),
+      fullName: t?.displayName ?? "",
+    };
+  } catch {
+    return { primary: "#1f6feb", secondary: "#ffffff", fullName: "" };
+  }
+}
+
+export const getTeamDetail = createServerFn({ method: "GET" })
+  .inputValidator((data: { teamId: string }) => {
+    if (!data?.teamId) throw new Error("teamId required");
+    return { teamId: String(data.teamId) };
+  })
+  .handler(async ({ data }): Promise<TeamDetail> => {
+    const base: TeamColors = {
+      id: data.teamId,
+      name: "",
+      fullName: "",
+      abbr: "",
+      logo: null,
+      primary: "#1f6feb",
+      secondary: "#ffffff",
+      record: "",
+      rank: null,
+      score: null,
+    };
+    try {
+      const [teamRes, schedRes] = await Promise.all([
+        getJson(`${BASE}/teams/${encodeURIComponent(data.teamId)}`),
+        getJson(`${BASE}/teams/${encodeURIComponent(data.teamId)}/schedule`),
+      ]);
+      const t = teamRes?.team;
+      const me: TeamColors = {
+        ...base,
+        name: t?.shortDisplayName ?? t?.nickname ?? t?.location ?? "Team",
+        fullName: t?.displayName ?? "",
+        abbr: t?.abbreviation ?? "",
+        logo: t?.logos?.[0]?.href ?? null,
+        primary: hex(t?.color, "1f6feb"),
+        secondary: hex(t?.alternateColor, "ffffff"),
+        record: t?.record?.items?.[0]?.summary ?? "",
+        rank: typeof t?.rank === "number" && t.rank > 0 && t.rank <= 25 ? t.rank : null,
+      };
+
+      const events: any[] = schedRes?.events ?? [];
+      const live = events.find((e) => e?.competitions?.[0]?.status?.type?.state === "in");
+      const played = [...events]
+        .filter((e) => e?.competitions?.[0]?.status?.type?.state === "post")
+        .pop();
+      const next = events.find((e) => e?.competitions?.[0]?.status?.type?.state === "pre");
+      const event = live ?? played ?? next ?? null;
+
+      if (!event) {
+        return {
+          team: me,
+          opponent: null,
+          eventId: null,
+          eventName: "",
+          date: "",
+          state: "pre",
+          detail: "No games scheduled",
+          homeId: null,
+          broadcast: null,
+          venue: null,
+          plays: [],
+          error: null,
+        };
+      }
+
+      const c = event.competitions?.[0];
+      const mine = c?.competitors?.find((x: any) => String(x.team?.id) === data.teamId);
+      const other = c?.competitors?.find((x: any) => String(x.team?.id) !== data.teamId);
+      const oTeam = other?.team;
+      const oColors = oTeam?.id ? await teamColors(String(oTeam.id)) : null;
+      const opponent: TeamColors | null = oTeam
+        ? {
+            id: String(oTeam.id),
+            name: oTeam.shortDisplayName ?? oTeam.nickname ?? oTeam.location ?? "",
+            fullName: oColors?.fullName || oTeam.displayName || "",
+            abbr: oTeam.abbreviation ?? "",
+            logo: oTeam.logos?.[0]?.href ?? null,
+            primary: oColors?.primary ?? "#1f6feb",
+            secondary: oColors?.secondary ?? "#ffffff",
+            record: other?.record?.[0]?.displayValue ?? "",
+            rank: typeof other?.curatedRank?.current === "number" && other.curatedRank.current <= 25
+              ? other.curatedRank.current
+              : null,
+            score: other?.score?.value ?? null,
+          }
+        : null;
+
+      me.score = mine?.score?.value ?? null;
+      const state = (c?.status?.type?.state ?? "pre") as TeamDetail["state"];
+
+      let plays: Play[] = [];
+      if (state !== "pre") {
+        const r = await getPlayByPlay({ data: { eventId: String(event.id) } });
+        plays = r.plays;
+      }
+
+      return {
+        team: me,
+        opponent,
+        eventId: String(event.id),
+        eventName: event.name ?? "",
+        date: event.date ?? "",
+        state,
+        detail: c?.status?.type?.shortDetail ?? "",
+        homeId: c?.competitors?.find((x: any) => x.homeAway === "home")?.team?.id
+          ? String(c.competitors.find((x: any) => x.homeAway === "home").team.id)
+          : null,
+        broadcast: c?.broadcasts?.[0]?.media?.shortName ?? null,
+        venue: c?.venue?.fullName ?? null,
+        plays,
+        error: null,
+      };
+    } catch (e) {
+      return {
+        team: base,
+        opponent: null,
+        eventId: null,
+        eventName: "",
+        date: "",
+        state: "pre",
+        detail: "",
+        homeId: null,
+        broadcast: null,
+        venue: null,
+        plays: [],
+        error: (e as Error).message,
+      };
+    }
+  });
