@@ -10,6 +10,7 @@ export type RankRow = {
   record: string;
   trend: string;
   logo: string | null;
+  color: string;
 };
 
 export type GameTeam = {
@@ -20,6 +21,7 @@ export type GameTeam = {
   record: string;
   rank: number | null;
   logo: string | null;
+  color: string;
 };
 
 export type Game = {
@@ -72,6 +74,7 @@ export const getRankings = createServerFn({ method: "GET" }).handler(async () =>
       record: r.recordSummary ?? "",
       trend: r.trend ?? "-",
       logo: pickLogo(r.team),
+      color: `#${(r.team?.color ?? "7FC2E6").replace("#", "")}`,
     }));
     return {
       poll: poll?.name ?? "AP Top 25",
@@ -103,6 +106,7 @@ export const getRankedGames = createServerFn({ method: "GET" }).handler(async ()
             record: comp.records?.[0]?.summary ?? "",
             rank: typeof rank === "number" && rank > 0 && rank <= 25 ? rank : null,
             logo: pickLogo(comp.team),
+            color: `#${(comp.team?.color ?? "7FC2E6").replace("#", "")}`,
           };
         };
         const home = mk("home");
