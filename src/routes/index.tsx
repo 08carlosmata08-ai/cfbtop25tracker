@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 
@@ -349,7 +349,7 @@ function TeamLine({
             {team.rank ? ` · #${team.rank}` : ""}
           </div>
         </div>
-      </button>
+      </Link>
       <div className="flex items-center gap-3">
         <button
           onClick={() => onFollow(team.id)}
@@ -387,7 +387,9 @@ function RankLine({
       <span className={`font-mono text-xs ${tone}`}>
         {trend.startsWith("+") ? `▲${trend.slice(1)}` : trend.startsWith("-") ? `▼${trend.slice(1)}` : "—"}
       </span>
-      <button
+      <Link
+        to="/team/$teamId"
+        params={{ teamId: row.teamId }}
         className="flex flex-1 items-center gap-3 text-left"
         onClick={() => {
           onSelect({ name: row.name, color: row.color });
@@ -405,7 +407,7 @@ function RankLine({
           )}
         </div>
         <span className="font-display text-base font-medium">{row.name}</span>
-      </button>
+      </Link>
       <span className="font-mono text-xs text-mute">{row.record}</span>
       <button
         onClick={() => onFollow(row.teamId)}
