@@ -145,6 +145,29 @@ export const getRankedGames = createServerFn({ method: "GET" }).handler(async ()
   }
 });
 
+async function fetchPlays(eventId: string): Promise<Play[]> {
+  const summary = await getJson(`${BASE}/summary?event=${encodeURIComponent(eventId)}`);
+  const drives = summary?.drives ?? {};
+  const all: any[] = [
+    ...(drives.previous ?? []).flatMap((d: any) => d.plays ?? []),
+    ...(drives.current?.plays ?? []),
+  ];
+  return all
+    .map((p: any) => ({
+      id: String(p.id ?? `${p.sequenceNumber}`),
+      text: p.text ?? p.type?.text ?? "",
+      clock: p.clock?.displayValue ?? "",
+      period: p.period?.number ?? 0,
+      scoring: Boolean(p.scoringPlay),
+      awayScore: Number(p.awayScore ?? 0),
+      homeScore: Number(p.homeScore ?? 0),
+      teamId: p.start?.team?.id ? String(p.start.team.id) : null,
+    }))
+    .filter((p) => p.text)
+    .reverse()
+    .slice(0, 40);
+}
+
 export const getPlayByPlay = createServerFn({ method: "GET" })
   .inputValidator((data: { eventId: string }) => {
     if (!data?.eventId) throw new Error("eventId required");
@@ -313,8 +336,7 @@ export const getTeamDetail = createServerFn({ method: "GET" })
 
       let plays: Play[] = [];
       if (state !== "pre") {
-        const r = await getPlayByPlay({ data: { eventId: String(event.id) } });
-        plays = r.plays;
+        plays = await fetchPlays(String(event.id));
       }
 
       return {
