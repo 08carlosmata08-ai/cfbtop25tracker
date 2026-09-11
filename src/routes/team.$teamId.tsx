@@ -34,6 +34,10 @@ function readable(hexColor: string) {
   return lum > 0.7 ? "#10151d" : "#ffffff";
 }
 
+function isTouchdown(text: string) {
+  return /touchdown/i.test(text ?? "");
+}
+
 function TeamPage() {
   const { teamId } = Route.useParams();
   const q = useQuery({
