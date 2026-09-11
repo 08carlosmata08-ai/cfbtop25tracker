@@ -34,6 +34,10 @@ function readable(hexColor: string) {
   return lum > 0.7 ? "#10151d" : "#ffffff";
 }
 
+function isTouchdown(text: string) {
+  return /touchdown/i.test(text ?? "");
+}
+
 function TeamPage() {
   const { teamId } = Route.useParams();
   const q = useQuery({
@@ -165,22 +169,32 @@ function TeamPage() {
                 {quarterPlays.map((p) => {
                   const owner: TeamColors | null =
                     p.teamId === me?.id ? me! : p.teamId === opp?.id ? opp : null;
+                  const td = isTouchdown(p.text);
+                  const tdColor = td ? owner?.primary : undefined;
                   return (
                     <div
                       key={p.id}
-                      className="flex gap-3 border-b border-white/10 py-2.5 last:border-0"
+                      className={`flex gap-3 border-b border-white/10 last:border-0 ${td ? "my-1 rounded-lg px-2 py-3 outline-1 -outline-offset-1" : "py-2.5"}`}
+                      style={
+                        td
+                          ? {
+                              backgroundColor: `${tdColor}22`,
+                              outlineColor: `${tdColor}66`,
+                            }
+                          : undefined
+                      }
                     >
                       <span
                         className="w-1 shrink-0 rounded-full"
-                        style={{ backgroundColor: owner?.primary ?? "transparent" }}
+                        style={{ backgroundColor: td ? tdColor : owner?.primary ?? "transparent" }}
                       />
                       <span
-                        className={`w-16 shrink-0 font-mono text-xs ${p.scoring ? "text-gold" : "text-white/60"}`}
+                        className={`w-16 shrink-0 font-mono ${td ? "text-sm font-semibold" : "text-xs"} ${p.scoring ? "text-gold" : "text-white/60"}`}
                       >
                         Q{p.period} {p.clock}
                       </span>
-                      <p className="text-sm">
-                        {p.text}{" "}
+                      <p className={`${td ? "text-base font-semibold" : "text-sm"}`}>
+                        <span style={td ? { color: tdColor } : undefined}>{p.text}</span>{" "}
                         <span className="font-mono text-xs text-white/60">
                           {d.homeId === me?.id
                             ? `${opp?.abbr ?? "AWAY"} ${p.awayScore} · ${me?.abbr} ${p.homeScore}`
