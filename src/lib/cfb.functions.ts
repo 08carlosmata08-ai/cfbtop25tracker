@@ -381,3 +381,137 @@ export const getTeamDetail = createServerFn({ method: "GET" })
       };
     }
   });
+
+export type GameResult = {
+  id: string;
+  label: string;
+  date: string;
+  pointsFor: number;
+  pointsAgainst: number;
+  won: boolean;
+};
+
+export type TeamStats = {
+  rank: number;
+  teamId: string;
+  name: string;
+  abbr: string;
+  logo: string | null;
+  color: string;
+  wins: number;
+  losses: number;
+  pointsFor: number;
+  pointsAgainst: number;
+  pointsPerGame: number;
+  pointsAllowedPerGame: number;
+  totalYards: number;
+  yardsPerGame: number;
+  yardsAllowed: number;
+  games: GameResult[];
+};
+
+function seasonYear() {
+  const now = new Date();
+  return now.getUTCMonth() >= 7 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
+}
+
+function statValue(categories: any[], category: string, name: string): number {
+  const cat = categories?.find((c: any) => c?.name === category);
+  const s = cat?.stats?.find((x: any) => x?.name === name);
+  const v = Number(s?.value);
+  return Number.isFinite(v) ? v : 0;
+}
+
+async function oneTeamStats(row: RankRow, year: number): Promise<TeamStats> {
+  const base: TeamStats = {
+    rank: row.rank,
+    teamId: row.teamId,
+    name: row.name,
+    abbr: row.abbr,
+    logo: row.logo,
+    color: row.color,
+    wins: 0,
+    losses: 0,
+    pointsFor: 0,
+    pointsAgainst: 0,
+    pointsPerGame: 0,
+    pointsAllowedPerGame: 0,
+    totalYards: 0,
+    yardsPerGame: 0,
+    yardsAllowed: 0,
+    games: [],
+  };
+
+  const [sched, stats] = await Promise.all([
+    getJson(`${BASE}/teams/${encodeURIComponent(row.teamId)}/schedule`).catch(() => null),
+    getJson(
+      `https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/${year}/types/2/teams/${encodeURIComponent(row.teamId)}/statistics`,
+    ).catch(() => null),
+  ]);
+
+  const events: any[] = sched?.events ?? [];
+  for (const e of events) {
+    const c = e?.competitions?.[0];
+    if (c?.status?.type?.state !== "post") continue;
+    const mine = c.competitors?.find((x: any) => String(x.team?.id) === row.teamId);
+    const other = c.competitors?.find((x: any) => String(x.team?.id) !== row.teamId);
+    if (!mine || !other) continue;
+    const pf = Number(mine.score?.value ?? 0);
+    const pa = Number(other.score?.value ?? 0);
+    const won = Boolean(mine.winner ?? pf > pa);
+    base.games.push({
+      id: String(e.id),
+      label: `${mine.homeAway === "home" ? "vs" : "@"} ${other.team?.abbreviation ?? other.team?.shortDisplayName ?? "OPP"}`,
+      date: e.date ?? "",
+      pointsFor: pf,
+      pointsAgainst: pa,
+      won,
+    });
+    base.pointsFor += pf;
+    base.pointsAgainst += pa;
+    if (won) base.wins += 1;
+    else base.losses += 1;
+  }
+
+  const played = base.games.length || 1;
+  base.pointsPerGame = Math.round((base.pointsFor / played) * 10) / 10;
+  base.pointsAllowedPerGame = Math.round((base.pointsAgainst / played) * 10) / 10;
+
+  const categories: any[] = stats?.splits?.categories ?? [];
+  if (categories.length) {
+    base.totalYards = statValue(categories, "rushing", "totalYards");
+    base.yardsPerGame = Math.round(statValue(categories, "passing", "netYardsPerGame") * 10) / 10;
+    base.yardsAllowed = statValue(categories, "defensive", "yardsAllowed");
+    if (!base.yardsPerGame && base.totalYards) {
+      base.yardsPerGame = Math.round((base.totalYards / played) * 10) / 10;
+    }
+  }
+
+  return base;
+}
+
+export const getTop25Stats = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    return await cached("top25-stats", 10 * 60_000, async () => {
+      const data = await cached("rankings", 5 * 60_000, () => getJson(`${BASE}/rankings`));
+      const poll =
+        data?.rankings?.find((r: any) => r?.shortName === "AP Top 25" || r?.name === "AP Top 25") ??
+        data?.rankings?.[0];
+      const rows: RankRow[] = (poll?.ranks ?? []).slice(0, 25).map((r: any) => ({
+        rank: r.current,
+        teamId: String(r.team?.id ?? ""),
+        name: r.team?.nickname ?? r.team?.location ?? "—",
+        abbr: r.team?.abbreviation ?? "",
+        record: r.recordSummary ?? "",
+        trend: r.trend ?? "-",
+        logo: pickLogo(r.team),
+        color: `#${(r.team?.color ?? "7FC2E6").replace("#", "")}`,
+      }));
+      const year = seasonYear();
+      const teams = await Promise.all(rows.map((r) => oneTeamStats(r, year)));
+      return { teams, week: data?.latestWeek?.displayName ?? "", error: null as string | null };
+    });
+  } catch (e) {
+    return { teams: [] as TeamStats[], week: "", error: (e as Error).message };
+  }
+});
