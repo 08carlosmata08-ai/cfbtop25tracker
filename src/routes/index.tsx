@@ -71,11 +71,7 @@ function clock(state: Game["state"], g: Game) {
 }
 
 function Index() {
-  const rankings = useQuery({
-    queryKey: ["rankings"],
-    queryFn: () => getRankings(),
-    refetchInterval: 5 * 60 * 1000,
-  });
+  const rankings = useQuery(rankingsQuery);
   const board = useQuery({
     queryKey: ["ranked-games"],
     queryFn: () => getRankedGames(),
