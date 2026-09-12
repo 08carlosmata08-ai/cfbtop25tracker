@@ -145,6 +145,12 @@ function Index() {
             <span className="rounded-md bg-white/5 px-3 py-2 font-mono text-xs text-mute outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md">
               {rankings.data?.week || "AP TOP 25"}
             </span>
+            <Link
+              to="/stats"
+              className="rounded-md bg-gold/15 px-3 py-2 font-mono text-xs uppercase tracking-[0.18em] text-gold outline-1 -outline-offset-1 outline-gold/30 backdrop-blur-md"
+            >
+              Team Stats
+            </Link>
             {accent && (
               <button
                 onClick={() => setAccent(null)}
