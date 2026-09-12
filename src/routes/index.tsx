@@ -12,7 +12,15 @@ import {
   type RankRow,
 } from "@/lib/cfb.functions";
 
+const rankingsQuery = {
+  queryKey: ["rankings"],
+  queryFn: () => getRankings(),
+  staleTime: 5 * 60 * 1000,
+  refetchInterval: 5 * 60 * 1000,
+};
+
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(rankingsQuery),
   head: () => ({
     meta: [
       { title: "Fieldline — Live College Football Top 25 Tracker" },
@@ -63,11 +71,7 @@ function clock(state: Game["state"], g: Game) {
 }
 
 function Index() {
-  const rankings = useQuery({
-    queryKey: ["rankings"],
-    queryFn: () => getRankings(),
-    refetchInterval: 5 * 60 * 1000,
-  });
+  const rankings = useQuery(rankingsQuery);
   const board = useQuery({
     queryKey: ["ranked-games"],
     queryFn: () => getRankedGames(),
@@ -141,6 +145,12 @@ function Index() {
             <span className="rounded-md bg-white/5 px-3 py-2 font-mono text-xs text-mute outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md">
               {rankings.data?.week || "AP TOP 25"}
             </span>
+            <Link
+              to="/stats"
+              className="rounded-md bg-gold/15 px-3 py-2 font-mono text-xs uppercase tracking-[0.18em] text-gold outline-1 -outline-offset-1 outline-gold/30 backdrop-blur-md"
+            >
+              Team Stats
+            </Link>
             {accent && (
               <button
                 onClick={() => setAccent(null)}
