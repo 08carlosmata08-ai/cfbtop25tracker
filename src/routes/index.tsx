@@ -12,7 +12,15 @@ import {
   type RankRow,
 } from "@/lib/cfb.functions";
 
+const rankingsQuery = {
+  queryKey: ["rankings"],
+  queryFn: () => getRankings(),
+  staleTime: 5 * 60 * 1000,
+  refetchInterval: 5 * 60 * 1000,
+};
+
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(rankingsQuery),
   head: () => ({
     meta: [
       { title: "Fieldline — Live College Football Top 25 Tracker" },
