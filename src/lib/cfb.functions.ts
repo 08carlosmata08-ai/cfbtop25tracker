@@ -33,6 +33,9 @@ export type Game = {
   situation: string | null;
   possessionId: string | null;
   broadcast: string | null;
+  broadcasts: string[];
+  startTime: string;
+  venue: string | null;
   home: GameTeam;
   away: GameTeam;
 };
@@ -72,7 +75,7 @@ function pickLogo(t: any): string | null {
 
 export const getRankings = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const data = await cached("rankings", 5 * 60_000, () => getJson(`${BASE}/rankings`));
+    const data = await cached("rankings", 30_000, () => getJson(`${BASE}/rankings`));
     const poll =
       data?.rankings?.find((r: any) => r?.shortName === "AP Top 25" || r?.name === "AP Top 25") ??
       data?.rankings?.[0];
