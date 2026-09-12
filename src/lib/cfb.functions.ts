@@ -54,6 +54,16 @@ async function getJson(url: string): Promise<any> {
   return res.json();
 }
 
+const cache = new Map<string, { at: number; value: unknown }>();
+
+async function cached<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < ttlMs) return hit.value as T;
+  const value = await fn();
+  cache.set(key, { at: Date.now(), value });
+  return value;
+}
+
 function pickLogo(t: any): string | null {
   if (typeof t?.logo === "string") return t.logo;
   const l = t?.logos?.[0]?.href;
