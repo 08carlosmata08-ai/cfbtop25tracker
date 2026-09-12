@@ -33,6 +33,9 @@ export type Game = {
   situation: string | null;
   possessionId: string | null;
   broadcast: string | null;
+  broadcasts: string[];
+  startTime: string;
+  venue: string | null;
   home: GameTeam;
   away: GameTeam;
 };
