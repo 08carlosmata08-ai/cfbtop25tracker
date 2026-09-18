@@ -305,8 +305,12 @@ function Index() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-display text-lg font-semibold tracking-wide">Active Top 25</h2>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
-                {rankings.data?.poll ?? "AP Top 25"} · {following.length} followed
+              <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-moss/70" />
+                  <span className="relative inline-flex size-2 rounded-full bg-moss" />
+                </span>
+                {rankings.data?.poll ?? "AP Top 25"} · {following.length} followed · auto-updating
               </p>
             </div>
             <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
