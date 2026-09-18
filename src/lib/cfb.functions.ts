@@ -127,6 +127,13 @@ export const getRankedGames = createServerFn({ method: "GET" }).handler(async ()
         if (!home || !away) return null;
         const st = c.status?.type;
         const sit = c.situation;
+        const broadcasts = Array.from(
+          new Set(
+            (c.broadcasts ?? [])
+              .flatMap((b: any) => [b?.media?.shortName, ...(b?.names ?? [])])
+              .filter((n: unknown): n is string => typeof n === "string" && n.length > 0),
+          ),
+        );
         return {
           id: String(e.id),
           state: (st?.state ?? "pre") as Game["state"],
@@ -137,7 +144,10 @@ export const getRankedGames = createServerFn({ method: "GET" }).handler(async ()
             ? `${sit.downDistanceText}${sit.possessionText ? ` at ${sit.possessionText}` : ""}`
             : null,
           possessionId: sit?.possession ? String(sit.possession) : null,
-          broadcast: c.broadcasts?.[0]?.names?.[0] ?? null,
+          broadcast: broadcasts[0] ?? null,
+          broadcasts,
+          startTime: e.date ?? "",
+          venue: c.venue?.fullName ?? null,
           home,
           away,
         } as Game;

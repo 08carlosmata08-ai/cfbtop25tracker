@@ -15,8 +15,8 @@ import {
 const rankingsQuery = {
   queryKey: ["rankings"],
   queryFn: () => getRankings(),
-  staleTime: 5 * 60 * 1000,
-  refetchInterval: 5 * 60 * 1000,
+  staleTime: 30_000,
+  refetchInterval: 30_000,
 };
 
 export const Route = createFileRoute("/")({
