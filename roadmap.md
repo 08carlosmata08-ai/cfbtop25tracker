@@ -6,3 +6,6 @@
 - [x] Selected team's colors tint the page background
 - [x] Top 25 team stats page (record, points, yards, scoring trends)
 - [x] Faster Top 25 load (server-rendered + cached feed)
+- [x] Cookie consent box on every page
+- [x] Where-to-watch: real TV listings, kickoff time and venue on games
+- [x] Live rankings panel: Top 25 auto-refreshes on the home board
