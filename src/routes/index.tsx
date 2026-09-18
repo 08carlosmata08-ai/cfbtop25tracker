@@ -184,7 +184,7 @@ function Index() {
             Now
           </span>
           <div className="flex items-center gap-4 whitespace-nowrap font-mono text-xs text-mute">
-            {games.length === 0 && <span>No ranked matchups on the board right now.</span>}
+            {games.length === 0 && <span>No Top 25 matchups on the board right now.</span>}
             {games.slice(0, 12).map((g, i) => (
               <span key={g.id} className="flex items-center gap-4">
                 {i > 0 && <span className="text-line">|</span>}
@@ -237,7 +237,7 @@ function Index() {
                 </>
               ) : (
                 <p className="font-mono text-xs text-mute">
-                  {board.isLoading ? "Loading the board…" : "No ranked games scheduled."}
+                  {board.isLoading ? "Loading the board…" : "No Top 25 matchups scheduled."}
                 </p>
               )}
             </div>

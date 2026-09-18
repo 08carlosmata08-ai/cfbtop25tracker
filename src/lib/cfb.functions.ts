@@ -153,7 +153,7 @@ export const getRankedGames = createServerFn({ method: "GET" }).handler(async ()
         } as Game;
       })
       .filter(Boolean)
-      .filter((g: Game) => g.home.rank !== null || g.away.rank !== null);
+      .filter((g: Game) => g.home.rank !== null && g.away.rank !== null);
 
     const order = { in: 0, pre: 1, post: 2 } as const;
     games.sort((a, b) => {
