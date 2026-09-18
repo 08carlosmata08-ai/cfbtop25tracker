@@ -70,6 +70,22 @@ function clock(state: Game["state"], g: Game) {
   return g.detail;
 }
 
+function kickoff(iso: string) {
+  if (!iso) return "";
+  try {
+    return (
+      new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZone: "America/New_York",
+      }).format(new Date(iso)) + " ET"
+    );
+  } catch {
+    return "";
+  }
+}
+
 function Index() {
   const rankings = useQuery(rankingsQuery);
   const board = useQuery({
