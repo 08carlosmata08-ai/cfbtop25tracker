@@ -241,6 +241,24 @@ function Index() {
                 </p>
               )}
             </div>
+            {(featured?.broadcasts?.length ?? 0) > 0 && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="rounded bg-gold/15 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+                  Where to watch
+                </span>
+                <span className="font-mono text-xs font-semibold text-ink">
+                  {featured!.broadcasts.join(" · ")}
+                </span>
+                <span className="font-mono text-xs text-mute">
+                  {[
+                    featured!.state === "pre" ? kickoff(featured!.startTime) : featured!.detail,
+                    featured!.venue,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+              </div>
+            )}
             <div className="mt-4 flex items-center gap-2 rounded-md bg-frost/60 px-3 py-2 font-mono text-xs uppercase text-mute">
               <span className="size-1.5 rounded-full bg-gold" />
               {featured?.situation ??
