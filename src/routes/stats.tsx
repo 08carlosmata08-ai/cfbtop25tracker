@@ -215,7 +215,8 @@ function StatsPage() {
                     <Spark team={t} />
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
