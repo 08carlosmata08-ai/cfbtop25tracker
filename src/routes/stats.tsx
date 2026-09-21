@@ -57,13 +57,35 @@ function StatsPage() {
   });
   const [sort, setSort] = useState<SortKey>("rank");
 
-  const teams = [...(q.data?.teams ?? [])].sort((a, b) =>
+  const all = q.data?.teams ?? [];
+
+  // Rank (1 = best) for each stat across the Top 25.
+  const statRanks = new Map<string, Map<string, number>>();
+  const rankBy = (key: "wins" | "pointsPerGame" | "pointsAllowedPerGame" | "yardsPerGame") => {
+    if (!statRanks.has(key)) {
+      const sorted = [...all].sort((a, b) =>
+        key === "pointsAllowedPerGame"
+          ? a[key] - b[key]
+          : key === "wins"
+            ? b.wins - a.wins || a.losses - b.losses
+            : b[key] - a[key],
+      );
+      statRanks.set(key, new Map(sorted.map((t, i) => [t.teamId, i + 1])));
+    }
+    return statRanks.get(key)!;
+  };
+
+  const teams = [...all].sort((a, b) =>
     sort === "rank"
       ? a.rank - b.rank
       : sort === "pointsAllowedPerGame"
         ? a[sort] - b[sort]
         : b[sort] - a[sort],
   );
+
+  // Ranking shown in the leading column: AP rank, or rank within the sorted stat.
+  const statRankOf = (t: TeamStats): number | null =>
+    sort === "rank" ? null : sort === "wins" ? rankBy("wins").get(t.teamId)! : rankBy(sort).get(t.teamId)!;
 
   const cols: { key: SortKey; label: string }[] = [
     { key: "rank", label: "Rank" },
@@ -72,6 +94,13 @@ function StatsPage() {
     { key: "pointsAllowedPerGame", label: "Opp PPG" },
     { key: "yardsPerGame", label: "Yds/G" },
   ];
+
+  const leadHeader =
+    sort === "rank"
+      ? "AP"
+      : sort === "wins"
+        ? "W Rk"
+        : cols.find((c) => c.key === sort)!.label + " Rk";
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a1626] font-body text-ink">
@@ -111,7 +140,7 @@ function StatsPage() {
           <table className="w-full min-w-[860px] border-collapse">
             <thead>
               <tr className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
-                <th className="px-4 py-3 text-left">#</th>
+                <th className="px-4 py-3 text-left">{leadHeader}</th>
                 <th className="px-4 py-3 text-left">Team</th>
                 <th className="px-4 py-3 text-right">W–L</th>
                 <th className="px-4 py-3 text-right">PF</th>
@@ -124,9 +153,24 @@ function StatsPage() {
               </tr>
             </thead>
             <tbody>
-              {teams.map((t) => (
+              {teams.map((t) => {
+                const statRank = statRankOf(t);
+                return (
                 <tr key={t.teamId} className="border-t border-white/10">
-                  <td className="px-4 py-3 font-mono text-sm">{t.rank}</td>
+                  <td className="px-4 py-3">
+                    {sort === "rank" ? (
+                      <span className="font-mono text-sm">{t.rank}</span>
+                    ) : (
+                      <span
+                        className={`inline-grid size-7 place-items-center rounded font-display text-sm font-bold ${
+                          statRank === 1 ? "bg-gold/25 text-gold" : "bg-white/5 text-mute"
+                        }`}
+                        title={`#${statRank} in ${leadHeader.replace(" Rk", "")} among the Top 25`}
+                      >
+                        {statRank}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <Link
                       to="/team/$teamId"
@@ -144,6 +188,12 @@ function StatsPage() {
                         )}
                       </span>
                       <span className="font-display text-base font-medium">{t.name}</span>
+                      <span
+                        className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-mute"
+                        title="AP Top 25 ranking"
+                      >
+                        #{t.rank}
+                      </span>
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-sm">
@@ -165,7 +215,8 @@ function StatsPage() {
                     <Spark team={t} />
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
