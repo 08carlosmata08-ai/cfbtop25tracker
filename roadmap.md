@@ -9,3 +9,4 @@
 - [x] Cookie consent box on every page
 - [x] Where-to-watch: real TV listings, kickoff time and venue on games
 - [x] Live rankings panel: Top 25 auto-refreshes on the home board
+- [x] Fix 403 on published site: send feed requests a user agent ESPN accepts
