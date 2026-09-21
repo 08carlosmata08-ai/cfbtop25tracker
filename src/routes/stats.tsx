@@ -57,13 +57,42 @@ function StatsPage() {
   });
   const [sort, setSort] = useState<SortKey>("rank");
 
-  const teams = [...(q.data?.teams ?? [])].sort((a, b) =>
+  const all = q.data?.teams ?? [];
+
+  // Rank (1 = best) for each stat across the Top 25.
+  const statRanks = new Map<string, Map<string, number>>();
+  const rankBy = (key: "wins" | "pointsPerGame" | "pointsAllowedPerGame" | "yardsPerGame") => {
+    if (!statRanks.has(key)) {
+      const sorted = [...all].sort((a, b) =>
+        key === "pointsAllowedPerGame"
+          ? a[key] - b[key]
+          : key === "wins"
+            ? b.wins - a.wins || a.losses - b.losses
+            : b[key] - a[key],
+      );
+      statRanks.set(key, new Map(sorted.map((t, i) => [t.teamId, i + 1])));
+    }
+    return statRanks.get(key)!;
+  };
+
+  const teams = [...all].sort((a, b) =>
     sort === "rank"
       ? a.rank - b.rank
       : sort === "pointsAllowedPerGame"
         ? a[sort] - b[sort]
         : b[sort] - a[sort],
   );
+
+  // Ranking shown in the leading column: AP rank, or rank within the sorted stat.
+  const statRankOf = (t: TeamStats): number | null =>
+    sort === "rank" ? null : sort === "wins" ? rankBy("wins").get(t.teamId)! : rankBy(sort).get(t.teamId)!;
+
+  const leadHeader =
+    sort === "rank"
+      ? "AP"
+      : sort === "wins"
+        ? "W Rk"
+        : cols.find((c) => c.key === sort)?.label + " Rk";
 
   const cols: { key: SortKey; label: string }[] = [
     { key: "rank", label: "Rank" },
