@@ -52,7 +52,15 @@ export type Play = {
 };
 
 async function getJson(url: string): Promise<any> {
-  const res = await fetch(url, { headers: { accept: "application/json" } });
+  const res = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      // ESPN's edge blocks serverless-worker and browser-style user agents
+      // from datacenter IPs with 403, but allows standard command-line
+      // client identification.
+      "user-agent": "curl/8.5.0",
+    },
+  });
   if (!res.ok) throw new Error(`Feed unavailable (${res.status})`);
   return res.json();
 }
