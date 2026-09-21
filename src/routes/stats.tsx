@@ -140,7 +140,7 @@ function StatsPage() {
           <table className="w-full min-w-[860px] border-collapse">
             <thead>
               <tr className="font-mono text-[10px] uppercase tracking-[0.2em] text-mute">
-                <th className="px-4 py-3 text-left">#</th>
+                <th className="px-4 py-3 text-left">{leadHeader}</th>
                 <th className="px-4 py-3 text-left">Team</th>
                 <th className="px-4 py-3 text-right">W–L</th>
                 <th className="px-4 py-3 text-right">PF</th>
@@ -153,9 +153,24 @@ function StatsPage() {
               </tr>
             </thead>
             <tbody>
-              {teams.map((t) => (
+              {teams.map((t) => {
+                const statRank = statRankOf(t);
+                return (
                 <tr key={t.teamId} className="border-t border-white/10">
-                  <td className="px-4 py-3 font-mono text-sm">{t.rank}</td>
+                  <td className="px-4 py-3">
+                    {sort === "rank" ? (
+                      <span className="font-mono text-sm">{t.rank}</span>
+                    ) : (
+                      <span
+                        className={`inline-grid size-7 place-items-center rounded font-display text-sm font-bold ${
+                          statRank === 1 ? "bg-gold/25 text-gold" : "bg-white/5 text-mute"
+                        }`}
+                        title={`#${statRank} in ${leadHeader.replace(" Rk", "")} among the Top 25`}
+                      >
+                        {statRank}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <Link
                       to="/team/$teamId"
@@ -173,6 +188,12 @@ function StatsPage() {
                         )}
                       </span>
                       <span className="font-display text-base font-medium">{t.name}</span>
+                      <span
+                        className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[11px] text-mute"
+                        title="AP Top 25 ranking"
+                      >
+                        #{t.rank}
+                      </span>
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-sm">
