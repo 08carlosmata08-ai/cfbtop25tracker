@@ -87,13 +87,6 @@ function StatsPage() {
   const statRankOf = (t: TeamStats): number | null =>
     sort === "rank" ? null : sort === "wins" ? rankBy("wins").get(t.teamId)! : rankBy(sort).get(t.teamId)!;
 
-  const leadHeader =
-    sort === "rank"
-      ? "AP"
-      : sort === "wins"
-        ? "W Rk"
-        : cols.find((c) => c.key === sort)?.label + " Rk";
-
   const cols: { key: SortKey; label: string }[] = [
     { key: "rank", label: "Rank" },
     { key: "wins", label: "Record" },
@@ -101,6 +94,13 @@ function StatsPage() {
     { key: "pointsAllowedPerGame", label: "Opp PPG" },
     { key: "yardsPerGame", label: "Yds/G" },
   ];
+
+  const leadHeader =
+    sort === "rank"
+      ? "AP"
+      : sort === "wins"
+        ? "W Rk"
+        : cols.find((c) => c.key === sort)!.label + " Rk";
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a1626] font-body text-ink">
