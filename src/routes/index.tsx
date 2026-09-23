@@ -87,7 +87,8 @@ function kickoff(iso: string) {
 }
 
 function Index() {
-  const rankings = useQuery(rankingsQuery);
+  const initialRankings = Route.useLoaderData();
+  const rankings = useQuery({ ...rankingsQuery, initialData: initialRankings });
   const board = useQuery({
     queryKey: ["ranked-games"],
     queryFn: () => getRankedGames(),
