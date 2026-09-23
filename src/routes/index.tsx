@@ -349,7 +349,7 @@ function Index() {
                     }}
                   />
                 ))}
-                {col.length === 0 && (
+                {mounted && col.length === 0 && (
                   <p className="py-2.5 font-mono text-xs text-mute">Loading rankings…</p>
                 )}
               </div>
