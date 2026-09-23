@@ -159,7 +159,7 @@ function Index() {
               <span className="font-mono text-xs text-ink">{liveCount} LIVE</span>
             </span>
             <span className="rounded-md bg-white/5 px-3 py-2 font-mono text-xs text-mute outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md">
-              {rankings.data?.week || "AP TOP 25"}
+              {mounted ? rankings.data?.week || "AP TOP 25" : "AP TOP 25"}
             </span>
             <Link
               to="/stats"

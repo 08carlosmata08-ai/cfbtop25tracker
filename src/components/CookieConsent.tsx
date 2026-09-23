@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 const COOKIE_KEY = "fieldline.cookies";
 
@@ -44,7 +45,14 @@ export function CookieConsent() {
             <p className="mt-1 text-sm leading-relaxed text-mute">
               Fieldline uses cookies to remember the teams you follow and keep
               your live board running smoothly. You can accept or keep browsing
-              with only the essentials.
+              with only the essentials. See our{" "}
+              <Link
+                to="/terms"
+                className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-ink"
+              >
+                Terms of Service
+              </Link>
+              .
             </p>
           </div>
         </div>
