@@ -87,7 +87,8 @@ function kickoff(iso: string) {
 }
 
 function Index() {
-  const rankings = useQuery(rankingsQuery);
+  const initialRankings = Route.useLoaderData();
+  const rankings = useQuery({ ...rankingsQuery, initialData: initialRankings });
   const board = useQuery({
     queryKey: ["ranked-games"],
     queryFn: () => getRankedGames(),
@@ -110,8 +111,6 @@ function Index() {
 
   const { ids: following, toggle } = useFollowing();
   const [accent, setAccent] = useState<{ name: string; color: string } | null>(null);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   const liveCount = games.filter((g) => g.state === "in").length;
   const rows = rankings.data?.rows ?? [];
@@ -161,7 +160,7 @@ function Index() {
               <span className="font-mono text-xs text-ink">{liveCount} LIVE</span>
             </span>
             <span className="rounded-md bg-white/5 px-3 py-2 font-mono text-xs text-mute outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md">
-              {mounted ? rankings.data?.week || "AP TOP 25" : "AP TOP 25"}
+              {rankings.data?.week || "AP TOP 25"}
             </span>
             <Link
               to="/stats"
@@ -349,7 +348,7 @@ function Index() {
                     }}
                   />
                 ))}
-                {mounted && col.length === 0 && (
+                {col.length === 0 && (
                   <p className="py-2.5 font-mono text-xs text-mute">Loading rankings…</p>
                 )}
               </div>
