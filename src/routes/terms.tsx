@@ -135,7 +135,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
 
 function TermsPage() {
   return (
-    <div className="min-h-screen bg-background font-body text-ink">
+    <div className="min-h-screen bg-frost font-body text-ink">
       <div className="mx-auto max-w-3xl px-5 py-10 lg:px-8">
         <div className="mb-8 flex items-center gap-3">
           <Link
@@ -160,7 +160,7 @@ function TermsPage() {
           </Link>
         </div>
 
-        <div className="rounded-xl bg-card/60 p-6 outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md sm:p-8">
+        <div className="rounded-xl bg-white/5 p-6 outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md sm:p-8">
           <h1 className="font-display text-3xl font-bold tracking-wide">
             Terms of Service
           </h1>
