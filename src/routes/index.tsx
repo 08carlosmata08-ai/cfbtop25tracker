@@ -110,6 +110,8 @@ function Index() {
 
   const { ids: following, toggle } = useFollowing();
   const [accent, setAccent] = useState<{ name: string; color: string } | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const liveCount = games.filter((g) => g.state === "in").length;
   const rows = rankings.data?.rows ?? [];
