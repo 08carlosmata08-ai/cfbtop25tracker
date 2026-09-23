@@ -96,9 +96,17 @@ function Index() {
 
   const games = board.data?.games ?? [];
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
+  // Biggest matchup of the week: ranked-vs-ranked with the best combined AP rank.
+  const bigMatchup = useMemo(() => {
+    const both = games.filter((g) => g.home.rank !== null && g.away.rank !== null);
+    if (both.length === 0) return games[0] ?? null;
+    return both.reduce((best, g) =>
+      g.home.rank! + g.away.rank! <= best.home.rank! + best.away.rank! ? g : best,
+    );
+  }, [games]);
   const featured = useMemo(
-    () => games.find((g) => g.id === selectedGameId) ?? games[0] ?? null,
-    [games, selectedGameId],
+    () => games.find((g) => g.id === selectedGameId) ?? bigMatchup,
+    [games, selectedGameId, bigMatchup],
   );
 
   const pbp = useQuery({
@@ -110,6 +118,12 @@ function Index() {
 
   const { ids: following, toggle } = useFollowing();
   const [accent, setAccent] = useState<{ name: string; color: string } | null>(null);
+  // Week label only after mount so SSR and client agree (avoids hydration mismatch).
+  const week = rankings.data?.week;
+  const [weekLabel, setWeekLabel] = useState<string | null>(null);
+  useEffect(() => {
+    if (week) setWeekLabel(week);
+  }, [week]);
 
   const liveCount = games.filter((g) => g.state === "in").length;
   const rows = rankings.data?.rows ?? [];
@@ -125,14 +139,21 @@ function Index() {
         className="absolute inset-0 z-0 size-full object-cover"
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#0a1626]/85 via-[#0c1c30]/70 to-[#0a1626]/90" />
-      {accent && (
-        <div
-          className="absolute inset-0 z-0 transition-opacity duration-500"
-          style={{
-            background: `radial-gradient(120% 90% at 15% 0%, ${accent.color}bb, transparent 60%), radial-gradient(100% 80% at 90% 100%, ${accent.color}66, transparent 65%)`,
-          }}
-        />
-      )}
+      {(() => {
+        const c1 = accent?.color ?? featured?.home.color;
+        const c2 = accent?.color ?? featured?.away.color;
+        if (!c1 && !c2) return null;
+        const layers = [
+          c1 ? `radial-gradient(120% 90% at 15% 0%, ${c1}bb, transparent 60%)` : "",
+          c2 ? `radial-gradient(100% 80% at 90% 100%, ${c2}66, transparent 65%)` : "",
+        ].filter(Boolean);
+        return (
+          <div
+            className="absolute inset-0 z-0 transition-opacity duration-500"
+            style={{ background: layers.join(", ") }}
+          />
+        );
+      })()}
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-5 py-5 lg:px-8">
         {/* Top bar */}
@@ -159,7 +180,7 @@ function Index() {
               <span className="font-mono text-xs text-ink">{liveCount} LIVE</span>
             </span>
             <span className="rounded-md bg-white/5 px-3 py-2 font-mono text-xs text-mute outline-1 -outline-offset-1 outline-white/10 backdrop-blur-md">
-              {rankings.data?.week || "AP TOP 25"}
+              {weekLabel || "AP TOP 25"}
             </span>
             <Link
               to="/stats"
