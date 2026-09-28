@@ -140,11 +140,11 @@ function Index() {
         <header className="mb-5 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="grid size-9 place-items-center rounded-md bg-gold font-display text-lg font-bold leading-none text-frost">
-              F
+              G
             </div>
             <div className="leading-none">
               <div className="font-display text-xl font-bold tracking-wide">
-                FIELD<span className="text-gold">LINE</span>
+                Goal<span className="text-gold">LINE</span>
               </div>
               <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-mute">
                 Live CFB Tracker
