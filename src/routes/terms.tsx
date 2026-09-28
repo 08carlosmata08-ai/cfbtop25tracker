@@ -3,16 +3,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — Fieldline" },
+      { title: "Terms of Service — GoalLINE" },
       {
         name: "description",
         content:
-          "Terms of Service for Fieldline, the live college football Top 25 tracker.",
+          "Terms of Service for GoalLINE, the live college football Top 25 tracker.",
       },
-      { property: "og:title", content: "Terms of Service — Fieldline" },
+      { property: "og:title", content: "Terms of Service — GoalLINE" },
       {
         property: "og:description",
-        content: "Terms of Service for Fieldline, the live college football Top 25 tracker.",
+        content: "Terms of Service for GoalLINE, the live college football Top 25 tracker.",
       },
     ],
   }),
