@@ -51,6 +51,13 @@ export function CookieConsent() {
                 className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-ink"
               >
                 Terms of Service
+              </Link>{" "}
+              and our{" "}
+              <Link
+                to="/privacy"
+                className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-ink"
+              >
+                Privacy Policy
               </Link>
               .
             </p>
