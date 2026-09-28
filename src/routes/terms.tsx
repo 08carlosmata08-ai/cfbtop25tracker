@@ -138,20 +138,21 @@ function TermsPage() {
     <div className="min-h-screen bg-frost font-body text-ink">
       <div className="mx-auto max-w-3xl px-5 py-10 lg:px-8">
         <div className="mb-8 flex items-center gap-3">
-          <Link
-            to="/"
-            className="grid size-9 place-items-center rounded-md bg-gold font-display text-lg font-bold leading-none text-frost"
-          >
-            F
-          </Link>
-          <div className="leading-none">
-            <div className="font-display text-xl font-bold tracking-wide">
-              FIELD<span className="text-gold">LINE</span>
+            GoalLINE badge and wordmark matching the home board
+            <Link
+              to="/"
+              className="grid size-9 place-items-center rounded-md bg-gold font-display text-lg font-bold leading-none text-frost"
+            >
+              G
+            </Link>
+            <div className="leading-none">
+              <div className="font-display text-xl font-bold tracking-wide">
+                Goal<span className="text-gold">LINE</span>
+              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-mute">
+                Live CFB Tracker
+              </div>
             </div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-mute">
-              Live CFB Tracker
-            </div>
-          </div>
           <Link
             to="/"
             className="ml-auto rounded-md bg-white/5 px-3 py-2 font-mono text-xs uppercase tracking-[0.18em] text-mute outline-1 -outline-offset-1 outline-white/10 transition-colors hover:text-ink"
