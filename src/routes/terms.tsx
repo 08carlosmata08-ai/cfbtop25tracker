@@ -24,7 +24,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     title: "1. Acceptance of terms",
     body: (
       <>
-        By accessing or using Fieldline (the "Service"), you agree to be bound by
+        By accessing or using GoalLINE (the "Service"), you agree to be bound by
         these Terms of Service. If you do not agree with any part of these terms,
         you may not use the Service.
       </>
@@ -34,7 +34,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     title: "2. Description of the service",
     body: (
       <>
-        Fieldline displays live college football scores, AP Top 25 rankings,
+        GoalLINE displays live college football scores, AP Top 25 rankings,
         play-by-play updates, team statistics, and broadcast information for
         ranked games. The Service is provided free of charge for personal,
         non-commercial use.
@@ -46,7 +46,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     body: (
       <>
         Scores, rankings, schedules, statistics, and broadcast details shown on
-        Fieldline are sourced from third-party sports data providers. Fieldline
+        GoalLINE are sourced from third-party sports data providers. GoalLINE
         does not generate or own this data and makes no guarantee as to its
         accuracy, completeness, or timeliness. All team names, logos, and
         trademarks belong to their respective owners and are used for
@@ -69,7 +69,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     title: "5. Cookies and local storage",
     body: (
       <>
-        Fieldline stores a small amount of information in your browser — such as
+        GoalLINE stores a small amount of information in your browser — such as
         the teams you follow and your cookie preference — so the board remembers
         you between visits. This data stays on your device. See our cookie notice
         on the home page for details on how to accept or decline.
@@ -80,8 +80,8 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     title: "6. Intellectual property",
     body: (
       <>
-        The Fieldline name, design, and original code are the property of
-        Fieldline. Third-party sports data and team marks remain the property of
+        The GoalLINE name, design, and original code are the property of
+        GoalLINE. Third-party sports data and team marks remain the property of
         their respective rights holders. Nothing in these terms transfers any
         ownership rights to you.
       </>
@@ -103,7 +103,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     title: "8. Limitation of liability",
     body: (
       <>
-        To the maximum extent permitted by law, Fieldline and its operators shall
+        To the maximum extent permitted by law, GoalLINE and its operators shall
         not be liable for any indirect, incidental, special, consequential, or
         punitive damages arising from your use of, or inability to use, the
         Service — including reliance on scores, rankings, or broadcast
@@ -127,7 +127,7 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
     body: (
       <>
         Questions about these terms can be sent through the feedback channel
-        where you access Fieldline.
+        where you access GoalLINE.
       </>
     ),
   },
@@ -183,7 +183,7 @@ function TermsPage() {
         </div>
 
         <p className="mt-6 text-center font-mono text-[11px] text-mute">
-          Fieldline is an independent tracker and is not affiliated with the NCAA, the AP, or any university.
+          GoalLINE is an independent tracker and is not affiliated with the NCAA, the AP, or any university.
         </p>
       </div>
     </div>
