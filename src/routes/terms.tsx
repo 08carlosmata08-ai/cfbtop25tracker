@@ -71,8 +71,15 @@ const SECTIONS: { title: string; body: React.ReactNode }[] = [
       <>
         GoalLINE stores a small amount of information in your browser — such as
         the teams you follow and your cookie preference — so the board remembers
-        you between visits. This data stays on your device. See our cookie notice
-        on the home page for details on how to accept or decline.
+        you between visits. This data stays on your device. See our{" "}
+        <Link
+          to="/privacy"
+          className="text-gold underline decoration-white/30 underline-offset-2 transition-colors hover:text-ink"
+        >
+          Privacy Policy
+        </Link>{" "}
+        for full details, and our cookie notice on the home page for how to
+        accept or decline.
       </>
     ),
   },

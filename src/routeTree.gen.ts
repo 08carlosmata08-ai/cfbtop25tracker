@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TeamTeamIdRouteImport } from './routes/team.$teamId'
@@ -17,6 +18,11 @@ import { Route as TeamTeamIdRouteImport } from './routes/team.$teamId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatsRoute = StatsRouteImport.update({
@@ -37,12 +43,14 @@ const TeamTeamIdRoute = TeamTeamIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/stats': typeof StatsRoute
   '/terms': typeof TermsRoute
   '/team/$teamId': typeof TeamTeamIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/stats': typeof StatsRoute
   '/terms': typeof TermsRoute
   '/team/$teamId': typeof TeamTeamIdRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/stats': typeof StatsRoute
   '/terms': typeof TermsRoute
   '/team/$teamId': typeof TeamTeamIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/stats' | '/terms' | '/team/$teamId'
+  fullPaths: '/' | '/privacy' | '/stats' | '/terms' | '/team/$teamId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/stats' | '/terms' | '/team/$teamId'
-  id: '__root__' | '/' | '/stats' | '/terms' | '/team/$teamId'
+  to: '/' | '/privacy' | '/stats' | '/terms' | '/team/$teamId'
+  id: '__root__' | '/' | '/privacy' | '/stats' | '/terms' | '/team/$teamId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PrivacyRoute: typeof PrivacyRoute
   StatsRoute: typeof StatsRoute
   TermsRoute: typeof TermsRoute
   TeamTeamIdRoute: typeof TeamTeamIdRoute
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stats': {
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PrivacyRoute: PrivacyRoute,
   StatsRoute: StatsRoute,
   TermsRoute: TermsRoute,
   TeamTeamIdRoute: TeamTeamIdRoute,
