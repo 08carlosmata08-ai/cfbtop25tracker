@@ -138,7 +138,6 @@ function TermsPage() {
     <div className="min-h-screen bg-frost font-body text-ink">
       <div className="mx-auto max-w-3xl px-5 py-10 lg:px-8">
         <div className="mb-8 flex items-center gap-3">
-            GoalLINE badge and wordmark matching the home board
             <Link
               to="/"
               className="grid size-9 place-items-center rounded-md bg-gold font-display text-lg font-bold leading-none text-frost"
