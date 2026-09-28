@@ -43,7 +43,7 @@ export function CookieConsent() {
               Cookies
             </h2>
             <p className="mt-1 text-sm leading-relaxed text-mute">
-              Fieldline uses cookies to remember the teams you follow and keep
+              GoalLINE uses cookies to remember the teams you follow and keep
               your live board running smoothly. You can accept or keep browsing
               with only the essentials. See our{" "}
               <Link
